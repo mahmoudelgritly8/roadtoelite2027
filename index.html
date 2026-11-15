@@ -449,8 +449,10 @@ textarea.input { min-height: 96px; resize: vertical; }
 </div>
 
 <script>
-/* Paste the Google Apps Script web app URL between the quotes to save entries and email results. Leave empty for preview mode. */
+/* Paste the Google Apps Script web app URL between the quotes to save entries. Leave empty for preview mode.
+   SEND_USER_EMAILS: false tells the Apps Script not to email anyone who fills in the page (sent as sendEmail/notifyUser in every submission). */
 const CONFIG = {
+  SEND_USER_EMAILS: false,
   SUBMIT_URL: "https://script.google.com/macros/s/AKfycbyYfvf4z81cu2F0ceBQM57tXP_cOWgMrXsgH5wankJoa6d1axqQ3Yj5J6SswF6-ZVo/exec"
 };
 </script>
@@ -1731,7 +1733,7 @@ CATS.forEach((c) => {
     const ctrl = typeof AbortController === "function" ? new AbortController() : null;
     const timer = ctrl ? setTimeout(() => ctrl.abort(), 9000) : null;
     try {
-      await fetch(CONFIG.SUBMIT_URL, { method: "POST", mode: "no-cors", keepalive: true, headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload), signal: ctrl ? ctrl.signal : undefined });
+      await fetch(CONFIG.SUBMIT_URL, { method: "POST", mode: "no-cors", keepalive: true, headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(Object.assign({}, payload, { sendEmail: CONFIG.SEND_USER_EMAILS === true, notifyUser: CONFIG.SEND_USER_EMAILS === true, emailUser: CONFIG.SEND_USER_EMAILS === true })), signal: ctrl ? ctrl.signal : undefined });
       return "sent";
     } catch (e) { return "failed"; }
     finally { if (timer) clearTimeout(timer); }
